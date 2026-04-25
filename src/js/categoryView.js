@@ -15,6 +15,9 @@ export default class CategoryView {
         this.ctgCacelBtn.addEventListener("click", () => {
             this.resetCategoryInputs()
         })
+        this.ctgTitleInput.addEventListener("input", () => {
+            this.ctgTitleInput.setCustomValidity("")
+        })
     }
 
     setupApp() {
@@ -22,8 +25,9 @@ export default class CategoryView {
     }
 
     resetCategoryInputs() {
-        this.ctgTitleInput.value = ' '
-        this.ctgDescInput.value = ' '
+        this.ctgTitleInput.value = ""
+        this.ctgDescInput.value = ""
+        this.ctgTitleInput.setCustomValidity("")
     }
 
     persistCategories(categories) {
@@ -31,36 +35,55 @@ export default class CategoryView {
         this.instantCtgUpdate(categories)
     }
 
+    validateCategoryForm() {
+        const normalizedTitle = this.ctgTitleInput.value.trim()
+
+        if (!normalizedTitle) {
+            this.ctgTitleInput.setCustomValidity("Category title is required.")
+            this.ctgTitleInput.reportValidity()
+            return false
+        }
+
+        if (normalizedTitle.length < 2) {
+            this.ctgTitleInput.setCustomValidity("Category title must be at least 2 characters long.")
+            this.ctgTitleInput.reportValidity()
+            return false
+        }
+
+        this.ctgTitleInput.setCustomValidity("")
+        return true
+    }
+
     addNewCategory() {
+        if (!this.validateCategoryForm()) {
+            return
+        }
+
         const normalizedTitle = this.ctgTitleInput.value.trim()
         const normalizedDescription = this.ctgDescInput.value.trim()
 
-        if (normalizedTitle.length >= 2) {
-            // save category to local storage
-            const savedCategories = Storage.getCategories();
-            const existedItem = savedCategories.find((c) => c.title === normalizedTitle);
+        // save category to local storage
+        const savedCategories = Storage.getCategories();
+        const existedItem = savedCategories.find((c) => c.title === normalizedTitle);
 
-            if (existedItem) {
-                existedItem.title = normalizedTitle;
-                existedItem.description = normalizedDescription;
-                existedItem.updatedAt = new Date().toISOString();
-                this.persistCategories(savedCategories)
-                this.resetCategoryInputs()
-                alert("this category name has been added before so we will update the category description!")
-            } else {
-                const newCategory = {
-                    id: new Date().getTime(),
-                    title: normalizedTitle,
-                    description: normalizedDescription,
-                    createdAt: new Date().toISOString(),
-                }
-
-                savedCategories.push(newCategory);
-                this.persistCategories(savedCategories)
-                this.resetCategoryInputs()
-            }
+        if (existedItem) {
+            existedItem.title = normalizedTitle;
+            existedItem.description = normalizedDescription;
+            existedItem.updatedAt = new Date().toISOString();
+            this.persistCategories(savedCategories)
+            this.resetCategoryInputs()
+            alert("this category name has been added before so we will update the category description!")
         } else {
-            alert("your entered title for category must be at least 2 characters!!!")
+            const newCategory = {
+                id: new Date().getTime(),
+                title: normalizedTitle,
+                description: normalizedDescription,
+                createdAt: new Date().toISOString(),
+            }
+
+            savedCategories.push(newCategory);
+            this.persistCategories(savedCategories)
+            this.resetCategoryInputs()
         }
     }
 
