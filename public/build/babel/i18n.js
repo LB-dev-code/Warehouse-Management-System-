@@ -27,6 +27,7 @@ var I18n = /*#__PURE__*/function () {
       en: {
         pageTitle: "Inventory App | Abolfazl Rahmati",
         languageToggle: "中文",
+        privacyPolicy: "Privacy Policy",
         appHeading: "Inventory App With JS & TailwindCSS",
         addCategoryHeading: "Add New Category",
         titleLabel: "Title",
@@ -71,11 +72,17 @@ var I18n = /*#__PURE__*/function () {
         categoryRequired: "Please select a category.",
         deleteProduct: "Delete",
         deleteProductAria: "Delete {title}",
-        deleteConfirm: "Are you sure you want to delete {title}?"
+        deleteConfirm: "Are you sure you want to delete {title}?",
+        cookieBannerTitle: "Cookie Preferences",
+        cookieBannerBody: "We use a small preference cookie and local browser storage to remember your language, inventory data, and cookie choice on this device.",
+        cookieAccept: "Accept",
+        cookieDecline: "Decline",
+        cookieLearnMore: "Read Privacy Policy"
       },
       zh: {
         pageTitle: "库存管理系统 | Abolfazl Rahmati",
         languageToggle: "EN",
+        privacyPolicy: "隐私政策",
         appHeading: "JavaScript 与 TailwindCSS 库存管理系统",
         addCategoryHeading: "新增类别",
         titleLabel: "标题",
@@ -120,7 +127,12 @@ var I18n = /*#__PURE__*/function () {
         categoryRequired: "请选择一个类别。",
         deleteProduct: "删除",
         deleteProductAria: "删除 {title}",
-        deleteConfirm: "确认要删除 {title} 吗？"
+        deleteConfirm: "确认要删除 {title} 吗？",
+        cookieBannerTitle: "Cookie 选择",
+        cookieBannerBody: "我们会使用一个偏好 Cookie 和浏览器本地存储，在当前设备上记住你的语言、库存数据和 Cookie 选择。",
+        cookieAccept: "接受",
+        cookieDecline: "拒绝",
+        cookieLearnMore: "查看隐私政策"
       }
     };
   }
