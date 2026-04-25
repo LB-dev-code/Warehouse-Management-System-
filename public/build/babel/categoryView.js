@@ -22,13 +22,16 @@ var CategoryView = exports["default"] = /*#__PURE__*/function () {
     this.ctgCacelBtn = document.querySelector("#categoryCanelBtn");
     this.ctgAddBtn = document.querySelector("#categoryAddNewBtn");
     this.ctgSelect = document.querySelector("#categoriesSelect");
+    this.categoriesList = document.querySelector("#categoriesList");
     // event listeners
     this.ctgAddBtn.addEventListener("click", function () {
       _this.addNewCategory();
     });
     this.ctgCacelBtn.addEventListener("click", function () {
-      _this.ctgTitleInput.value = ' ';
-      _this.ctgDescInput.value = ' ';
+      _this.resetCategoryInputs();
+    });
+    this.ctgTitleInput.addEventListener("input", function () {
+      _this.ctgTitleInput.setCustomValidity("");
     });
   }
   return _createClass(CategoryView, [{
@@ -37,43 +40,66 @@ var CategoryView = exports["default"] = /*#__PURE__*/function () {
       this.instantCtgUpdate(_storage["default"].getCategories());
     }
   }, {
+    key: "resetCategoryInputs",
+    value: function resetCategoryInputs() {
+      this.ctgTitleInput.value = "";
+      this.ctgDescInput.value = "";
+      this.ctgTitleInput.setCustomValidity("");
+    }
+  }, {
+    key: "persistCategories",
+    value: function persistCategories(categories) {
+      _storage["default"].saveCategories(categories);
+      this.instantCtgUpdate(categories);
+    }
+  }, {
+    key: "validateCategoryForm",
+    value: function validateCategoryForm() {
+      var normalizedTitle = this.ctgTitleInput.value.trim();
+      if (!normalizedTitle) {
+        this.ctgTitleInput.setCustomValidity("Category title is required.");
+        this.ctgTitleInput.reportValidity();
+        return false;
+      }
+      if (normalizedTitle.length < 2) {
+        this.ctgTitleInput.setCustomValidity("Category title must be at least 2 characters long.");
+        this.ctgTitleInput.reportValidity();
+        return false;
+      }
+      this.ctgTitleInput.setCustomValidity("");
+      return true;
+    }
+  }, {
     key: "addNewCategory",
     value: function addNewCategory() {
-      if (this.ctgTitleInput.value.trim().length >= 2) {
-        // create new object for each category
-        var newCategroy = {
-          id: new Date().getTime(),
-          title: this.ctgTitleInput.value,
-          description: this.ctgDescInput.value
-        };
-        // reset inputs value
-        this.ctgTitleInput.value = ' ';
-        this.ctgDescInput.value = ' ';
-        // save category to local storage
-        var savedCategories = _storage["default"].getCategories();
-        // edit => ... save
-        // new => ... save
-        var existedItem = savedCategories.find(function (c) {
-          return c.title === newCategroy.title;
-        });
-        if (existedItem) {
-          // edit
-          existedItem.title = newCategroy.title;
-          existedItem.description = newCategroy.description;
-          alert("this category name has been added before so we will update the category description!");
-          return;
-        } else {
-          // new
-          newCategroy.id = new Date().getTime();
-          newCategroy.createdAt = new Date().toISOString();
-          savedCategories.push(newCategroy);
-        }
-        console.log(savedCategories);
-        _storage["default"].saveCategories(savedCategories);
-        // instant update html category list from storage
-        this.instantCtgUpdate(savedCategories);
+      if (!this.validateCategoryForm()) {
+        return;
+      }
+      var normalizedTitle = this.ctgTitleInput.value.trim();
+      var normalizedDescription = this.ctgDescInput.value.trim();
+
+      // save category to local storage
+      var savedCategories = _storage["default"].getCategories();
+      var existedItem = savedCategories.find(function (c) {
+        return c.title === normalizedTitle;
+      });
+      if (existedItem) {
+        existedItem.title = normalizedTitle;
+        existedItem.description = normalizedDescription;
+        existedItem.updatedAt = new Date().toISOString();
+        this.persistCategories(savedCategories);
+        this.resetCategoryInputs();
+        alert("this category name has been added before so we will update the category description!");
       } else {
-        alert("your entered title for category must be at least 2 characters!!!");
+        var newCategory = {
+          id: new Date().getTime(),
+          title: normalizedTitle,
+          description: normalizedDescription,
+          createdAt: new Date().toISOString()
+        };
+        savedCategories.push(newCategory);
+        this.persistCategories(savedCategories);
+        this.resetCategoryInputs();
       }
     }
   }, {
@@ -83,7 +109,6 @@ var CategoryView = exports["default"] = /*#__PURE__*/function () {
       var ctgListTitles = categories.map(function (obj) {
         return obj.title.trim();
       });
-      console.log(categories);
       // create option for each category
       this.ctgSelect.innerHTML = " <option selected value=\"none\">- select category -</option>  ";
       ctgListTitles.forEach(function (option) {
@@ -93,6 +118,37 @@ var CategoryView = exports["default"] = /*#__PURE__*/function () {
         // append new created option to select tg
         _this2.ctgSelect.append(newOption);
       });
+      this.renderCategoriesList(categories);
+    }
+  }, {
+    key: "renderCategoriesList",
+    value: function renderCategoriesList(categories) {
+      var categoriesFragment = document.createDocumentFragment();
+      if (!categories.length) {
+        var emptyItem = document.createElement("li");
+        emptyItem.className = "rounded-2xl border border-dashed border-[#394247] px-4 py-4 text-sm text-stone-400 text-center";
+        emptyItem.textContent = "No categories have been added yet.";
+        categoriesFragment.append(emptyItem);
+      }
+      categories.forEach(function (category) {
+        var categoryItem = document.createElement("li");
+        var titleBlock = document.createElement("div");
+        var descriptionBlock = document.createElement("p");
+        var categoryTitle = document.createElement("p");
+        var categoryMeta = document.createElement("p");
+        categoryItem.className = "flex items-start justify-between gap-4 rounded-2xl border border-[#394247] px-4 py-3 text-stone-100";
+        titleBlock.className = "w-2/5";
+        descriptionBlock.className = "w-3/5 text-right text-sm text-stone-300";
+        categoryTitle.className = "font-semibold";
+        categoryMeta.className = "mt-1 text-xs uppercase tracking-[0.16em] text-stone-400";
+        categoryTitle.textContent = category.title;
+        categoryMeta.textContent = category.updatedAt ? "Updated" : "Saved";
+        descriptionBlock.textContent = category.description || "No description";
+        titleBlock.append(categoryTitle, categoryMeta);
+        categoryItem.append(titleBlock, descriptionBlock);
+        categoriesFragment.append(categoryItem);
+      });
+      this.categoriesList.replaceChildren(categoriesFragment);
     }
   }]);
 }();

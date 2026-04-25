@@ -8,6 +8,7 @@ export default class CategoryView {
         this.ctgCacelBtn = document.querySelector("#categoryCanelBtn")
         this.ctgAddBtn = document.querySelector("#categoryAddNewBtn")
         this.ctgSelect = document.querySelector("#categoriesSelect")
+        this.categoriesList = document.querySelector("#categoriesList")
         // event listeners
         this.ctgAddBtn.addEventListener("click", () => {
             this.addNewCategory()
@@ -89,7 +90,6 @@ export default class CategoryView {
 
     instantCtgUpdate(categories) {
         const ctgListTitles = categories.map(obj => obj.title.trim())
-        console.log(categories);
         // create option for each category
         this.ctgSelect.innerHTML = ` <option selected value="none">- select category -</option>  `
         ctgListTitles.forEach(option => {
@@ -99,6 +99,42 @@ export default class CategoryView {
             // append new created option to select tg
             this.ctgSelect.append(newOption)
         });
+        this.renderCategoriesList(categories)
+    }
+
+    renderCategoriesList(categories) {
+        const categoriesFragment = document.createDocumentFragment()
+
+        if (!categories.length) {
+            const emptyItem = document.createElement("li")
+            emptyItem.className = "rounded-2xl border border-dashed border-[#394247] px-4 py-4 text-sm text-stone-400 text-center"
+            emptyItem.textContent = "No categories have been added yet."
+            categoriesFragment.append(emptyItem)
+        }
+
+        categories.forEach((category) => {
+            const categoryItem = document.createElement("li")
+            const titleBlock = document.createElement("div")
+            const descriptionBlock = document.createElement("p")
+            const categoryTitle = document.createElement("p")
+            const categoryMeta = document.createElement("p")
+
+            categoryItem.className = "flex items-start justify-between gap-4 rounded-2xl border border-[#394247] px-4 py-3 text-stone-100"
+            titleBlock.className = "w-2/5"
+            descriptionBlock.className = "w-3/5 text-right text-sm text-stone-300"
+            categoryTitle.className = "font-semibold"
+            categoryMeta.className = "mt-1 text-xs uppercase tracking-[0.16em] text-stone-400"
+
+            categoryTitle.textContent = category.title
+            categoryMeta.textContent = category.updatedAt ? "Updated" : "Saved"
+            descriptionBlock.textContent = category.description || "No description"
+
+            titleBlock.append(categoryTitle, categoryMeta)
+            categoryItem.append(titleBlock, descriptionBlock)
+            categoriesFragment.append(categoryItem)
+        })
+
+        this.categoriesList.replaceChildren(categoriesFragment)
     }
 
 }
