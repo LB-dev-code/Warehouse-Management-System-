@@ -1,4 +1,5 @@
 import Storage from "./storage.js";
+import i18n from "./i18n.js";
 
 export default class CategoryView {
     constructor() {
@@ -40,13 +41,13 @@ export default class CategoryView {
         const normalizedTitle = this.ctgTitleInput.value.trim()
 
         if (!normalizedTitle) {
-            this.ctgTitleInput.setCustomValidity("Category title is required.")
+            this.ctgTitleInput.setCustomValidity(i18n.t("categoryTitleRequired"))
             this.ctgTitleInput.reportValidity()
             return false
         }
 
         if (normalizedTitle.length < 2) {
-            this.ctgTitleInput.setCustomValidity("Category title must be at least 2 characters long.")
+            this.ctgTitleInput.setCustomValidity(i18n.t("categoryTitleMin"))
             this.ctgTitleInput.reportValidity()
             return false
         }
@@ -73,7 +74,7 @@ export default class CategoryView {
             existedItem.updatedAt = new Date().toISOString();
             this.persistCategories(savedCategories)
             this.resetCategoryInputs()
-            alert("this category name has been added before so we will update the category description!")
+            alert(i18n.t("categoryUpdated"))
         } else {
             const newCategory = {
                 id: new Date().getTime(),
@@ -90,8 +91,12 @@ export default class CategoryView {
 
     instantCtgUpdate(categories) {
         const ctgListTitles = categories.map(obj => obj.title.trim())
-        // create option for each category
-        this.ctgSelect.innerHTML = ` <option selected value="none">- select category -</option>  `
+        const defaultOption = document.createElement("option")
+
+        defaultOption.selected = true
+        defaultOption.value = "none"
+        defaultOption.textContent = i18n.t("selectCategory")
+        this.ctgSelect.replaceChildren(defaultOption)
         ctgListTitles.forEach(option => {
             const newOption = document.createElement("option")
             newOption.value = option;
@@ -108,7 +113,7 @@ export default class CategoryView {
         if (!categories.length) {
             const emptyItem = document.createElement("li")
             emptyItem.className = "rounded-2xl border border-dashed border-[#394247] px-4 py-4 text-sm text-stone-400 text-center"
-            emptyItem.textContent = "No categories have been added yet."
+            emptyItem.textContent = i18n.t("noCategoriesYet")
             categoriesFragment.append(emptyItem)
         }
 
@@ -126,8 +131,8 @@ export default class CategoryView {
             categoryMeta.className = "mt-1 text-xs uppercase tracking-[0.16em] text-stone-400"
 
             categoryTitle.textContent = category.title
-            categoryMeta.textContent = category.updatedAt ? "Updated" : "Saved"
-            descriptionBlock.textContent = category.description || "No description"
+            categoryMeta.textContent = category.updatedAt ? i18n.t("categoryMetaUpdated") : i18n.t("categoryMetaSaved")
+            descriptionBlock.textContent = category.description || i18n.t("noDescription")
 
             titleBlock.append(categoryTitle, categoryMeta)
             categoryItem.append(titleBlock, descriptionBlock)

@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 var _storage = _interopRequireDefault(require("./storage.js"));
+var _i18n = _interopRequireDefault(require("./i18n.js"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
@@ -79,12 +80,12 @@ var ProductView = exports["default"] = /*#__PURE__*/function () {
       var minimumLength = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
       var normalizedValue = this.normalizeUserText(field.value);
       if (!normalizedValue) {
-        field.setCustomValidity("".concat(label, " is required."));
+        field.setCustomValidity(_i18n["default"].t("".concat(label, "Required")));
         field.reportValidity();
         return false;
       }
       if (normalizedValue.length < minimumLength) {
-        field.setCustomValidity("".concat(label, " must be at least ").concat(minimumLength, " characters long."));
+        field.setCustomValidity(_i18n["default"].t("".concat(label, "Min")));
         field.reportValidity();
         return false;
       }
@@ -95,7 +96,7 @@ var ProductView = exports["default"] = /*#__PURE__*/function () {
     key: "validateRequiredSelect",
     value: function validateRequiredSelect(field, label) {
       if (field.value === "none") {
-        field.setCustomValidity("Please select a ".concat(label.toLowerCase(), "."));
+        field.setCustomValidity(_i18n["default"].t("".concat(label, "Required")));
         field.reportValidity();
         return false;
       }
@@ -105,13 +106,13 @@ var ProductView = exports["default"] = /*#__PURE__*/function () {
   }, {
     key: "validateProductForm",
     value: function validateProductForm() {
-      if (!this.validateRequiredTextField(this.pdtTitle, "Product title", 2)) {
+      if (!this.validateRequiredTextField(this.pdtTitle, "productTitle", 2)) {
         return false;
       }
-      if (!this.validateRequiredSelect(this.pdtLocation, "Location")) {
+      if (!this.validateRequiredSelect(this.pdtLocation, "location")) {
         return false;
       }
-      if (!this.validateRequiredSelect(this.ctgSelect, "Category")) {
+      if (!this.validateRequiredSelect(this.ctgSelect, "category")) {
         return false;
       }
       return true;
@@ -245,7 +246,7 @@ var ProductView = exports["default"] = /*#__PURE__*/function () {
     value: function createEmptyStateItem() {
       var emptyItem = document.createElement("li");
       emptyItem.className = "w-full py-6 text-center text-stone-400 text-sm";
-      emptyItem.textContent = "No products have been added yet.";
+      emptyItem.textContent = _i18n["default"].t("noProductsYet");
       return emptyItem;
     }
   }, {
@@ -270,7 +271,9 @@ var ProductView = exports["default"] = /*#__PURE__*/function () {
       deleteButton.setAttribute("data-product-id", String(product.id));
       deleteButton.setAttribute("data-product-title", this.normalizeUserText(product.title));
       deleteButton.setAttribute("class", "pdt-dlt-btn flex items-center justify-end");
-      deleteButton.setAttribute("aria-label", "Delete ".concat(this.normalizeUserText(product.title) || "product"));
+      deleteButton.setAttribute("aria-label", _i18n["default"].t("deleteProductAria", {
+        title: this.normalizeUserText(product.title) || _i18n["default"].t("deleteProduct")
+      }));
       deleteIcon.setAttribute("class", "stroke-red-500 dd:h-6 dd:w-6 ss:h-5 ss:w-5 cursor-pointer");
       deleteIcon.setAttribute("xmlns", svgNamespace);
       deleteIcon.setAttribute("fill", "none");
@@ -318,8 +321,10 @@ var ProductView = exports["default"] = /*#__PURE__*/function () {
     key: "deleteProduct",
     value: function deleteProduct(e) {
       var productId = Number(e.currentTarget.dataset.productId);
-      var productTitle = e.currentTarget.dataset.productTitle || "this product";
-      if (!window.confirm("Are you sure you want to delete ".concat(productTitle, "?"))) {
+      var productTitle = e.currentTarget.dataset.productTitle || _i18n["default"].t("deleteProduct");
+      if (!window.confirm(_i18n["default"].t("deleteConfirm", {
+        title: productTitle
+      }))) {
         return;
       }
       _storage["default"].removeProduct(productId);

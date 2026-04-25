@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 var _storage = _interopRequireDefault(require("./storage.js"));
+var _i18n = _interopRequireDefault(require("./i18n.js"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
@@ -57,12 +58,12 @@ var CategoryView = exports["default"] = /*#__PURE__*/function () {
     value: function validateCategoryForm() {
       var normalizedTitle = this.ctgTitleInput.value.trim();
       if (!normalizedTitle) {
-        this.ctgTitleInput.setCustomValidity("Category title is required.");
+        this.ctgTitleInput.setCustomValidity(_i18n["default"].t("categoryTitleRequired"));
         this.ctgTitleInput.reportValidity();
         return false;
       }
       if (normalizedTitle.length < 2) {
-        this.ctgTitleInput.setCustomValidity("Category title must be at least 2 characters long.");
+        this.ctgTitleInput.setCustomValidity(_i18n["default"].t("categoryTitleMin"));
         this.ctgTitleInput.reportValidity();
         return false;
       }
@@ -89,7 +90,7 @@ var CategoryView = exports["default"] = /*#__PURE__*/function () {
         existedItem.updatedAt = new Date().toISOString();
         this.persistCategories(savedCategories);
         this.resetCategoryInputs();
-        alert("this category name has been added before so we will update the category description!");
+        alert(_i18n["default"].t("categoryUpdated"));
       } else {
         var newCategory = {
           id: new Date().getTime(),
@@ -109,8 +110,11 @@ var CategoryView = exports["default"] = /*#__PURE__*/function () {
       var ctgListTitles = categories.map(function (obj) {
         return obj.title.trim();
       });
-      // create option for each category
-      this.ctgSelect.innerHTML = " <option selected value=\"none\">- select category -</option>  ";
+      var defaultOption = document.createElement("option");
+      defaultOption.selected = true;
+      defaultOption.value = "none";
+      defaultOption.textContent = _i18n["default"].t("selectCategory");
+      this.ctgSelect.replaceChildren(defaultOption);
       ctgListTitles.forEach(function (option) {
         var newOption = document.createElement("option");
         newOption.value = option;
@@ -127,7 +131,7 @@ var CategoryView = exports["default"] = /*#__PURE__*/function () {
       if (!categories.length) {
         var emptyItem = document.createElement("li");
         emptyItem.className = "rounded-2xl border border-dashed border-[#394247] px-4 py-4 text-sm text-stone-400 text-center";
-        emptyItem.textContent = "No categories have been added yet.";
+        emptyItem.textContent = _i18n["default"].t("noCategoriesYet");
         categoriesFragment.append(emptyItem);
       }
       categories.forEach(function (category) {
@@ -142,8 +146,8 @@ var CategoryView = exports["default"] = /*#__PURE__*/function () {
         categoryTitle.className = "font-semibold";
         categoryMeta.className = "mt-1 text-xs uppercase tracking-[0.16em] text-stone-400";
         categoryTitle.textContent = category.title;
-        categoryMeta.textContent = category.updatedAt ? "Updated" : "Saved";
-        descriptionBlock.textContent = category.description || "No description";
+        categoryMeta.textContent = category.updatedAt ? _i18n["default"].t("categoryMetaUpdated") : _i18n["default"].t("categoryMetaSaved");
+        descriptionBlock.textContent = category.description || _i18n["default"].t("noDescription");
         titleBlock.append(categoryTitle, categoryMeta);
         categoryItem.append(titleBlock, descriptionBlock);
         categoriesFragment.append(categoryItem);

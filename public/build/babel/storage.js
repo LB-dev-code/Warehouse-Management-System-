@@ -35,6 +35,16 @@ var Storage = exports["default"] = /*#__PURE__*/function () {
       localStorage.setItem("categories", JSON.stringify(categoriesList));
     }
   }, {
+    key: "getLanguage",
+    value: function getLanguage() {
+      return localStorage.getItem("language") || "en";
+    }
+  }, {
+    key: "saveLanguage",
+    value: function saveLanguage(language) {
+      localStorage.setItem("language", language);
+    }
+  }, {
     key: "removeProduct",
     value: function removeProduct(deletedId) {
       var UpdatedProducts = this.getProducts.filter(function (product) {

@@ -111,6 +111,7 @@
     "tailwind-minify": " npx tailwindcss -i ./src/css/tailwind.css -o ./public/build/style.css --minify  ",
     "app-babel": "babel src/js/app.js -o public/build/babel/app.js --presets @babel/preset-env ",
     "categoryView-babel": "babel src/js/categoryView.js -o public/build/babel/categoryView.js --presets @babel/preset-env  ",
+    "i18n-babel": "babel src/js/i18n.js -o public/build/babel/i18n.js --presets @babel/preset-env  ",
     "productView-babel": "babel src/js/productView.js -o public/build/babel/productView.js --presets @babel/preset-env  ",
     "storage-babel": "babel src/js/storage.js -o public/build/babel/storage.js --presets @babel/preset-env  ",
     "build": "webpack"

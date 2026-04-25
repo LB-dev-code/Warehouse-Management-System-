@@ -1,4 +1,5 @@
 import Storage from "./storage.js";
+import i18n from "./i18n.js";
 
 export default class ProductView {
     constructor() {
@@ -58,13 +59,13 @@ export default class ProductView {
         const normalizedValue = this.normalizeUserText(field.value)
 
         if (!normalizedValue) {
-            field.setCustomValidity(`${label} is required.`)
+            field.setCustomValidity(i18n.t(`${label}Required`))
             field.reportValidity()
             return false
         }
 
         if (normalizedValue.length < minimumLength) {
-            field.setCustomValidity(`${label} must be at least ${minimumLength} characters long.`)
+            field.setCustomValidity(i18n.t(`${label}Min`))
             field.reportValidity()
             return false
         }
@@ -75,7 +76,7 @@ export default class ProductView {
 
     validateRequiredSelect(field, label) {
         if (field.value === "none") {
-            field.setCustomValidity(`Please select a ${label.toLowerCase()}.`)
+            field.setCustomValidity(i18n.t(`${label}Required`))
             field.reportValidity()
             return false
         }
@@ -85,15 +86,15 @@ export default class ProductView {
     }
 
     validateProductForm() {
-        if (!this.validateRequiredTextField(this.pdtTitle, "Product title", 2)) {
+        if (!this.validateRequiredTextField(this.pdtTitle, "productTitle", 2)) {
             return false
         }
 
-        if (!this.validateRequiredSelect(this.pdtLocation, "Location")) {
+        if (!this.validateRequiredSelect(this.pdtLocation, "location")) {
             return false
         }
 
-        if (!this.validateRequiredSelect(this.ctgSelect, "Category")) {
+        if (!this.validateRequiredSelect(this.ctgSelect, "category")) {
             return false
         }
 
@@ -235,7 +236,7 @@ export default class ProductView {
         const emptyItem = document.createElement("li")
 
         emptyItem.className = "w-full py-6 text-center text-stone-400 text-sm"
-        emptyItem.textContent = "No products have been added yet."
+        emptyItem.textContent = i18n.t("noProductsYet")
 
         return emptyItem
     }
@@ -261,7 +262,9 @@ export default class ProductView {
         deleteButton.setAttribute("data-product-id", String(product.id))
         deleteButton.setAttribute("data-product-title", this.normalizeUserText(product.title))
         deleteButton.setAttribute("class", "pdt-dlt-btn flex items-center justify-end")
-        deleteButton.setAttribute("aria-label", `Delete ${this.normalizeUserText(product.title) || "product"}`)
+        deleteButton.setAttribute("aria-label", i18n.t("deleteProductAria", {
+            title: this.normalizeUserText(product.title) || i18n.t("deleteProduct")
+        }))
 
         deleteIcon.setAttribute("class", "stroke-red-500 dd:h-6 dd:w-6 ss:h-5 ss:w-5 cursor-pointer");
         deleteIcon.setAttribute("xmlns", svgNamespace);
@@ -311,9 +314,9 @@ export default class ProductView {
 
     deleteProduct(e) {
         const productId = Number(e.currentTarget.dataset.productId)
-        const productTitle = e.currentTarget.dataset.productTitle || "this product"
+        const productTitle = e.currentTarget.dataset.productTitle || i18n.t("deleteProduct")
 
-        if (!window.confirm(`Are you sure you want to delete ${productTitle}?`)) {
+        if (!window.confirm(i18n.t("deleteConfirm", { title: productTitle }))) {
             return
         }
 
